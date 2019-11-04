@@ -29,18 +29,61 @@ f_d_a = {(d0, a0): 100,
 # (1) An initial assignment is made at random
 # (2) We generate the given number of samples
 # (3) We write the samples to a csv file (Not sure if needed for next TODO)
-# (4) TODO: Plot a graph of P(A|b1) from the samples we generated y-axis
+# (4) TODO: Plot a graph of P(A|b1) from the samples we generated. y-axis
 #           is estimate of P(A|b1) and x-axis is number of samples. Also
 #           plot a horizontal line representing the P(A|b1) computed from
 #           Variable Elimination by hand (Q1A)
 def run():
     if len(sys.argv) > 1:
-        num_samples_to_generate = int(sys.argv[1])
-    print("Usage: \npython3 a3.py <number of samples to generate>")
+        runGibbsSampling(int(sys.argv[1]))
+        plotGraph()
+    else:
+        print('Usage: \n"python3 a3.py <number of samples to generate>" to run Gibbs Sampling and plot the Graph')
 
+#plots the graph of P(A|b1)
+# y-axis is estimate of P(A|b1) and x-axis is number of samples. 
+# Also plot a horizontal line representing the P(A|b1) computed from Variable Elimination by hand (Q1A)
+def plotGraph():
+    x = []
+    y = []
+    num_samples = 0
+    num_a0 = 0
+    num_a1 = 0
+
+    with open('samples.csv', newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            num_samples += 1
+            if row[0] == 'a0':
+                num_a0 += 1
+            elif row[0] == 'a1':
+                num_a1 += 1
+
+            normalized_a1 = num_a1 / num_samples
+            x.append(num_samples)
+            y.append(normalized_a1)
+        
+    normalized_a1 = num_a1 / num_samples
+    normalized_a0 = num_a0 / num_samples
+    final_posterior_distribution = str(normalized_a1) + ", " + str(normalized_a0)
+    print(final_posterior_distribution)
+    plot(x, y, 'Gibbs Sampling')
+    sys.exit()
+
+# Plots the given x, y into a graph
+def plot(x, y, title):
+    plt.plot(x,y, label='P(r|s,w)')
+    plt.xlabel('Number of samples')
+    plt.ylabel('P(A|b1)')
+    plt.title(title)
+    plt.legend()
+    plt.show()
+
+# executes Gibbs Sampling and writes the samples to a csv file
+def runGibbsSampling(num_samples_to_generate):
     init_random_initial_assignment()
-    print("Initial assignment:")
-    print(previous_sample)
+    #print("Initial assignment:")
+    #print(previous_sample)
     samples.append(previous_sample)
     generate_samples(num_samples_to_generate)
     write_samples_to_csv()
@@ -69,8 +112,8 @@ def sample_a():
                         'b': previous_sample['b'],
                         'c': previous_sample['c'],
                         'd': previous_sample['d']}
-    print("Sampled a and adding generated sample:")
-    print(generated_sample)
+    #print("Sampled a and adding generated sample:")
+    #print(generated_sample)
     samples.append(generated_sample)
     update_previous_sample(generated_sample)
 
@@ -87,8 +130,8 @@ def sample_c():
                         'b': previous_sample['b'],
                         'c': c_val,
                         'd': previous_sample['d']}
-    print("Sampled c and adding generated sample:")
-    print(generated_sample)
+    #print("Sampled c and adding generated sample:")
+    #print(generated_sample)
     samples.append(generated_sample)
     update_previous_sample(generated_sample)
 
@@ -105,8 +148,8 @@ def sample_d():
                         'b': previous_sample['b'],
                         'c': previous_sample['c'],
                         'd': d_val}
-    print("Sampled d and adding generated sample:")
-    print(generated_sample)
+    #print("Sampled d and adding generated sample:")
+    #print(generated_sample)
     samples.append(generated_sample)
     update_previous_sample(generated_sample)
 
