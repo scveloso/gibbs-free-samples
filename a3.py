@@ -8,6 +8,7 @@ a0, a1, b0, b1, c0, c1, d0, d1 = "a0", "a1", "b0", "b1", "c0", "c1", "d0", "d1"
 previous_sample = {}
 is_a, is_c, is_d = 0, 1, 2
 samples = []
+VARIABLE_ELIMINATION_RESULT = 0.029
 
 f_a_b = {(a0, b1): 5,
         (a1, b1): 10}
@@ -41,7 +42,7 @@ def run():
         print('Usage: \n"python3 a3.py <number of samples to generate>" to run Gibbs Sampling and plot the Graph')
 
 #plots the graph of P(A|b1)
-# y-axis is estimate of P(A|b1) and x-axis is number of samples. 
+# y-axis is estimate of P(A|b1) and x-axis is number of samples.
 # Also plot a horizontal line representing the P(A|b1) computed from Variable Elimination by hand (Q1A)
 def plotGraph():
     x = []
@@ -62,7 +63,7 @@ def plotGraph():
             normalized_a1 = num_a1 / num_samples
             x.append(num_samples)
             y.append(normalized_a1)
-        
+
     normalized_a1 = num_a1 / num_samples
     normalized_a0 = num_a0 / num_samples
     final_posterior_distribution = str(normalized_a1) + ", " + str(normalized_a0)
@@ -72,11 +73,14 @@ def plotGraph():
 
 # Plots the given x, y into a graph
 def plot(x, y, title):
+    ve_result = [VARIABLE_ELIMINATION_RESULT] * len(y)
     plt.plot(x,y, label='P(r|s,w)')
+    plt.plot(x,ve_result)
     plt.xlabel('Number of samples')
     plt.ylabel('P(A|b1)')
     plt.title(title)
     plt.legend()
+    plt.legend(['P(r|s,w) through Gibbs Sampling', 'P(r|s,w) through Variable Elimination'], loc='upper right')
     plt.show()
 
 # executes Gibbs Sampling and writes the samples to a csv file
